@@ -44,8 +44,16 @@ def load_data():
     
     try:
         # Load retail dataset
+        # Get the directory of the current script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Construct the full path to the CSV file
+        # Based on your screenshot, the file is in the same directory as app.py
+        file_path = os.path.join(script_dir, 'retail_datset.csv')
+    
+        # Load retail dataset
         print("Loading retail dataset...")
-        sales_data = pd.read_csv('retail_datset.csv')
+        sales_data = pd.read_csv(file_path)
         
         # Clean and preprocess data
         sales_data = sales_data.dropna(subset=['units_sold', 'price'])
