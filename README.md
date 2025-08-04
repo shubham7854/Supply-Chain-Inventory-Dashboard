@@ -23,3 +23,8 @@ A web-based dashboard built during a hackathon to monitor and manage retail inve
 ```bash
 pip install -r requirements.txt
 python app.py
+
+## 🚀 Live Demo
+[Click here to view the project]
+( https://supply-chain-inventory-dashboard-8fg6.onrender.com )
+
