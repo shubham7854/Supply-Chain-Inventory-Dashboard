@@ -42,19 +42,22 @@ def load_data():
     """Load and preprocess the retail dataset"""
     global sales_data
     
+
     try:
-        # Load retail dataset
-        # Get the directory of the current script
+        # Get the directory of the current script (e.g., app.py)
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        
-        # Construct the full path to the CSV file
-        # Based on your screenshot, the file is in the same directory as app.py
         file_path = os.path.join(script_dir, 'retail_datset.csv')
     
         # Load retail dataset
-        print("Loading retail dataset...")
+        print(f"Loading retail dataset from: {file_path}")
         sales_data = pd.read_csv(file_path)
-        
+    
+        # Validate that required columns exist before proceeding
+        required_columns = ['units_sold', 'price', 'date', 'event', 'product_category', 'product_id', 'store_id']
+        if not all(col in sales_data.columns for col in required_columns):
+            missing_cols = [col for col in required_columns if col not in sales_data.columns]
+            raise ValueError(f"❌ Error: The following required columns are missing from the CSV file: {missing_cols}")
+    
         # Clean and preprocess data
         sales_data = sales_data.dropna(subset=['units_sold', 'price'])
         sales_data['date'] = pd.to_datetime(sales_data['date'])
@@ -69,14 +72,23 @@ def load_data():
         sales_data['event_encoded'] = sales_data['event'].astype('category').cat.codes
         sales_data['category_encoded'] = sales_data['product_category'].astype('category').cat.codes
         
-        print(f"✅ Retail data loaded successfully!")
-        print(f"   - Dataset shape: {sales_data.shape}")
-        print(f"   - Date range: {sales_data['date'].min()} to {sales_data['date'].max()}")
-        print(f"   - Products: {sales_data['product_id'].nunique()}")
-        print(f"   - Stores: {sales_data['store_id'].nunique()}")
+        print(f"✅ Retail data loaded and processed successfully!")
+        print(f"    - Dataset shape: {sales_data.shape}")
+        print(f"    - Date range: {sales_data['date'].min()} to {sales_data['date'].max()}")
+        print(f"    - Products: {sales_data['product_id'].nunique()}")
+        print(f"    - Stores: {sales_data['store_id'].nunique()}")
         
+    except FileNotFoundError:
+        print(f"❌ Error: The file 'retail_datset.csv' was not found at the expected location: {file_path}")
+        raise
+    except ValueError as ve:
+        print(f"❌ Data Validation Error: {ve}")
+        raise
+    except KeyError as ke:
+        print(f"❌ KeyError: A column expected by the code was not found. Details: {ke}")
+        raise
     except Exception as e:
-        print(f"❌ Error loading data: {e}")
+        print(f"❌ An unexpected error occurred during data processing: {e}")
         raise
 
 def prepare_features_for_prediction(product_id=None, store_id=None):
